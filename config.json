@@ -1,0 +1,5 @@
+{
+    "intervalo_minutos": 30,
+    "aerodromos_monitorar": ["SBBR", "SBGR"],
+    "regioes_satelite": ["BR"]
+}

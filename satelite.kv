@@ -1,0 +1,166 @@
+<Interface>:
+    canvas:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    font_name: 'seguiemj'
+    TabbedPanel:
+        do_default_tab: False
+        tab_pos: 'top_mid'
+        tab_height: '48dp'
+        background_color: 0.1, 0.1, 0.1, 1
+        
+        TabbedPanelItem:
+            text: '🛰️ Satélite'
+            font_name: 'seguiemj'
+            background_color: (0.3, 0, 0, 1) if self.state == 'down' else (0.5, 0, 0, 1)
+            
+            BoxLayout:
+                orientation: 'vertical'
+                padding: 10
+                spacing: 10
+                size_hint: 1, 1
+
+                # Cabeçalho - 20% da tela
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: 0.2
+                    spacing: 2
+
+                    Label:
+                        id: temp_label
+                        text: "Bem vindo ao interpretador de Satélite"
+                        font_size: '16sp'
+                        color: 1, 1, 1, 1
+                        size_hint_y: 0.5
+                        halign: 'center'
+                        text_size: self.width, None
+
+                    Spinner:
+                        id: spinner
+                        text: 'Escolha a região'
+                        font_size: '16sp'
+                        values: ('1 - América do Sul', '2 - Brasil', '3 - Centro-Oeste','4 - Distrito Federal', '5 - Norte', '6 - Nordeste', '7 - Sul', '8 - Sudeste')
+                        size_hint_y: 0.8
+                        background_color: (0.5, 0, 0, 1)
+                        color: 1, 1, 1, 1
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.8
+                        spacing: 5
+
+                        Button:
+                            text: 'Analisar Imagem'
+                            font_size: '14sp'
+                            size_hint_x: 0.5
+                            background_color: (0.5, 0, 0, 1)
+                            color: 1, 1, 1, 1
+                            on_press: root.analisar(self)
+                        Button:
+                            text: 'Status Auto'
+                            font_size: '14sp'
+                            size_hint_x: 0.34
+                            background_color: (0.3, 0.3, 0.6, 1)
+                            color: 1, 1, 1, 1
+                            on_press: root.check_auto_updates_status()  # 🆕 NOVA FUNÇÃO
+                        
+                        Button:
+                            text: 'Fechar Imagem'
+                            font_size: '14sp'
+                            size_hint_x: 0.5
+                            background_color: (0.5, 0, 0, 1)
+                            color: 1, 1, 1, 1
+                            on_press: root.esconder_imagem(self)
+
+                # Área da imagem - 80% da tela
+                Image:
+                    id: image_widget
+                    size_hint: 1, 1
+                    allow_stretch: True
+                    fit_mode: 'scale-down'
+                    color: 0, 0, 0, 1
+
+        TabbedPanelItem:
+            text: '✈️ METAR/TAF'
+            font_name: 'seguiemj'
+            background_color: (0, 0.3, 0, 1) if self.state == 'down' else (0, 0.5, 0, 1)
+            
+            BoxLayout:
+                orientation: 'vertical'
+                padding: 15
+                spacing: 10
+
+                # Cabeçalho METAR/TAF
+                Label:
+                    text: '🛫 INTERPRETADOR METAR/TAF'
+                    font_name: 'seguiemj'
+                    size_hint_y: None
+                    height: 40
+                    font_size: '18sp'
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: 'center'
+
+                # Campo de entrada
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: 50
+                    spacing: 10
+
+                    TextInput:
+                        id: icao_input
+                        hint_text: 'Digite ICAO (ex: SBBR, SBGR)'
+                        size_hint_x: 0.7
+                        multiline: False
+                        font_size: '16sp'
+                        background_color: 0.2, 0.2, 0.2, 1
+                        foreground_color: 1, 1, 1, 1
+
+                    Button:
+                        id: buscar_btn
+                        text: 'BUSCAR'
+                        size_hint_x: 0.3
+                        background_color: 0, 0.6, 0, 1
+                        font_size: '16sp'
+                        bold: True
+                        on_press: root.buscar_metar_taf(self)
+
+                # Status
+                Label:
+                    id: status_metar
+                    text: 'Digite um código ICAO e clique em BUSCAR'
+                    font_name: 'seguiemj'
+                    size_hint_y: None
+                    height: 30
+                    font_size: '12sp'
+                    color: 0.8, 0.8, 0.8, 1
+
+                # Área de resultados
+                ScrollView:
+                    size_hint_y: 1
+                    do_scroll_x: False  # Só scroll vertical
+                    do_scroll_y: True
+                    bar_width: '12dp'  # Mais larga
+                    bar_color: 0.5, 0.5, 0.5, 0.8  # Cor mais visível
+                    bar_inactive_color: 0.5, 0.5, 0.5, 0.3  # Cor quando inativa
+                    bar_margin: '2dp'  # Margem da barra
+                    scroll_type: ['bars', 'content']  # Permite arrastar pelo conteúdo também
+    
+    # ✅ MELHORIAS DE DESEMPENHO
+                    effect_cls: 'ScrollEffect'  # Comportamento mais suave
+                    Label:
+                        id: resultado_metar_taf
+                        text: '☔Os resultados aparecerão aqui...'
+                        size_hint_y: None  # ✅ Importante!
+                        height: self.texture_size[1]  # ✅ Altura automática pelo conteúdo
+                        text_size: self.width, None   # ✅ Quebra de texto na largura do container
+                        font_name: 'seguiemj'
+                        font_size: '14sp'
+                        halign: 'left'
+                        valign: 'top'
+                        color: 1, 1, 1, 1
+                        markup: True
